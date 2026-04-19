@@ -60,7 +60,9 @@ export function LineItemRow({ item, onChange, onRemove, taxRate }: Props) {
               checked={item.taxable}
               onChange={(v) => patch({ taxable: v })}
             />
-            <span className="text-xs font-medium text-slate-600">+{taxRate}%</span>
+            <span className="text-xs font-medium text-slate-600">
+              +{taxRate}%
+            </span>
           </div>
         </div>
       </div>
