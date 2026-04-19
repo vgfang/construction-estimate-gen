@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import type { Company, Estimate, Section } from "./types";
 import {
-  consumeEstimateNumber,
+  generateEstimateNumber,
   loadCompany,
   loadTaxRate,
-  peekEstimateNumber,
   saveCompany,
   saveTaxRate,
 } from "./utils/storage";
@@ -29,7 +28,7 @@ function today(): string {
 
 function initialEstimate(): Estimate {
   return {
-    number: peekEstimateNumber(),
+    number: generateEstimateNumber(),
     date: today(),
     client: { name: "", address: "", phone: "", email: "" },
     sections: [newSection("")],
@@ -73,11 +72,8 @@ function App() {
   };
 
   const handlePrint = () => {
-    const number = consumeEstimateNumber();
-    const finalized: Estimate = { ...estimate, number };
-    const html = buildEstimateHtml(company, finalized, taxRate);
+    const html = buildEstimateHtml(company, estimate, taxRate);
     openPrintWindow(html);
-    setEstimate((prev) => ({ ...prev, number: peekEstimateNumber() }));
   };
 
   return (

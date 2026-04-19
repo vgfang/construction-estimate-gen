@@ -1,3 +1,4 @@
+import { generateEstimateNumber } from "../utils/storage";
 import { Panel } from "./ui/Panel";
 import { TextInput } from "./ui/TextInput";
 
@@ -17,11 +18,29 @@ export function MetaPanel({
   return (
     <Panel title="Estimate Details">
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <TextInput
-          label="Estimate number"
-          value={number}
-          onChange={onNumberChange}
-        />
+        <div className="flex flex-col gap-1">
+          <label className="text-xs font-medium uppercase tracking-wide text-slate-600">
+            Estimate number
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={number}
+              onChange={(e) => onNumberChange(e.target.value)}
+              className="min-w-0 flex-1 rounded-md border border-slate-400 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-300"
+            />
+            <button
+              type="button"
+              onClick={() => onNumberChange(generateEstimateNumber())}
+              title="Generate new number"
+              className="rounded-md border border-slate-400 bg-slate-100 px-2 py-2 text-slate-500 hover:bg-slate-200 hover:text-slate-700"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
         <TextInput
           label="Date"
           type="date"
