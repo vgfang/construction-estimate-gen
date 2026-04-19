@@ -36,6 +36,7 @@ function formatDate(iso: string): string {
 export function buildEstimateHtml(
   company: Company,
   estimate: Estimate,
+  taxRate: number,
 ): string {
   const logoImg = company.logo
     ? `<img src="${company.logo}" alt="" class="logo"/>`
@@ -81,8 +82,8 @@ export function buildEstimateHtml(
 
   const sub = subtotal(estimate.sections);
   const taxSub = taxableSubtotal(estimate.sections);
-  const tax = taxAmount(estimate.sections, estimate.taxRate);
-  const grand = total(estimate.sections, estimate.taxRate);
+  const tax = taxAmount(estimate.sections, taxRate);
+  const grand = total(estimate.sections, taxRate);
 
   const notesBlock = estimate.notes.trim()
     ? `<section class="notes">
@@ -102,9 +103,21 @@ export function buildEstimateHtml(
 <meta charset="utf-8"/>
 <title>Estimate ${escapeHtml(estimate.number)}</title>
 <style>
-  @page { size: letter; margin: 0.5in; }
+  @page {
+    size: letter;
+    margin: 0.5in;
+    @bottom-center {
+      content: "Page " counter(page) " of " counter(pages);
+      font-size: 9pt;
+      color: #555;
+    }
+  }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
+  table.doc { width: 100%; border-collapse: collapse; }
+  table.doc > thead { display: table-header-group; }
+  table.doc > tbody { display: table-row-group; }
+  table.doc td { padding: 0; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
     color: #111;
@@ -234,70 +247,74 @@ export function buildEstimateHtml(
 </style>
 </head>
 <body>
-  <div class="page">
-    <header class="top">
-      <div class="company">
-        ${logoImg}
-        <div class="company-text">
-          <div class="name">${escapeHtml(company.name || "Your Company")}</div>
-          <div class="line">${nl2br(company.address || "")}</div>
-          <div class="line">${companyLine}</div>
+  <table class="doc">
+    <thead>
+      <tr><td>
+        <header class="top">
+          <div class="company">
+            ${logoImg}
+            <div class="company-text">
+              <div class="name">${escapeHtml(company.name || "Your Company")}</div>
+              <div class="line">${nl2br(company.address || "")}</div>
+              <div class="line">${companyLine}</div>
+            </div>
+          </div>
+          <div class="title-block">
+            <div class="title">ESTIMATE</div>
+            <div class="meta">
+              <div><strong>No.</strong> ${escapeHtml(estimate.number)}</div>
+              <div><strong>Date:</strong> ${escapeHtml(formatDate(estimate.date))}</div>
+            </div>
+          </div>
+        </header>
+      </td></tr>
+    </thead>
+    <tbody>
+      <tr><td>
+        <section class="client-block">
+          <div>
+            <div class="label">Prepared For</div>
+            <div><strong>${escapeHtml(estimate.client.name || "")}</strong></div>
+            <div>${nl2br(estimate.client.address || "")}</div>
+            <div>${escapeHtml(estimate.client.phone || "")}</div>
+            <div>${escapeHtml(estimate.client.email || "")}</div>
+          </div>
+        </section>
+
+        ${sectionsHtml}
+
+        <div class="totals">
+          <table>
+            <tr>
+              <td class="label">Subtotal</td>
+              <td class="val">${formatMoney(sub)}</td>
+            </tr>
+            <tr>
+              <td class="label">Taxable subtotal</td>
+              <td class="val">${formatMoney(taxSub)}</td>
+            </tr>
+            <tr>
+              <td class="label">Tax (${Number(taxRate) || 0}%)</td>
+              <td class="val">${formatMoney(tax)}</td>
+            </tr>
+            <tr class="grand">
+              <td class="label">Total</td>
+              <td class="val">${formatMoney(grand)}</td>
+            </tr>
+          </table>
         </div>
-      </div>
-      <div class="title-block">
-        <div class="title">ESTIMATE</div>
-        <div class="meta">
-          <div><strong>No.</strong> ${escapeHtml(estimate.number)}</div>
-          <div><strong>Date:</strong> ${escapeHtml(formatDate(estimate.date))}</div>
+
+        ${notesBlock}
+
+        ${company.disclaimer ? `<div class="disclaimer">${nl2br(company.disclaimer)}</div>` : ""}
+
+        <div class="signature">
+          <div class="line"><span>Accepted by (client signature)</span></div>
+          <div class="line"><span>Date</span></div>
         </div>
-      </div>
-    </header>
-
-    <section class="client-block">
-      <div>
-        <div class="label">Prepared For</div>
-        <div><strong>${escapeHtml(estimate.client.name || "")}</strong></div>
-        <div>${nl2br(estimate.client.address || "")}</div>
-        <div>${escapeHtml(estimate.client.phone || "")}</div>
-        <div>${escapeHtml(estimate.client.email || "")}</div>
-      </div>
-    </section>
-
-    ${sectionsHtml}
-
-    <div class="totals">
-      <table>
-        <tr>
-          <td class="label">Subtotal</td>
-          <td class="val">${formatMoney(sub)}</td>
-        </tr>
-        <tr>
-          <td class="label">Taxable subtotal</td>
-          <td class="val">${formatMoney(taxSub)}</td>
-        </tr>
-        <tr>
-          <td class="label">Tax (${Number(estimate.taxRate) || 0}%)</td>
-          <td class="val">${formatMoney(tax)}</td>
-        </tr>
-        <tr class="grand">
-          <td class="label">Total</td>
-          <td class="val">${formatMoney(grand)}</td>
-        </tr>
-      </table>
-    </div>
-
-    ${notesBlock}
-
-    <div class="disclaimer">
-      This is an estimate only. Prices are subject to change if scope of work
-      changes. Signature below indicates acceptance of the scope and pricing above.
-    </div>
-
-    <div class="signature">
-      <div class="line"><span>Accepted by (client signature)</span></div>
-      <div class="line"><span>Date</span></div>
-    </div>
-  </div>
+      </td></tr>
+    </tbody>
+  </table>
   <script>
     window.addEventListener('load', function () {
       setTimeout(function () { window.print(); }, 100);

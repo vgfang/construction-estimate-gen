@@ -28,14 +28,12 @@ export function ClientPanel({ client, onChange }: Props) {
           label="Email"
           value={client.email}
           onChange={(v) => patch({ email: v })}
-          className="md:col-span-1"
         />
         <TextArea
           label="Address"
           value={client.address}
           onChange={(v) => patch({ address: v })}
           rows={2}
-          className="md:col-span-2"
         />
       </div>
     </Panel>

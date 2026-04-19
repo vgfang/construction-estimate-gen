@@ -19,6 +19,7 @@ export type Company = {
   email: string;
   license?: string;
   logo?: string;
+  disclaimer?: string;
 };
 
 export type Client = {
@@ -33,6 +34,5 @@ export type Estimate = {
   date: string;
   client: Client;
   sections: Section[];
-  taxRate: number;
   notes: string;
 };

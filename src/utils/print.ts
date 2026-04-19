@@ -7,9 +7,6 @@ export function openPrintWindow(html: string): void {
   w.document.open();
   w.document.write(html);
   w.document.close();
-  w.addEventListener("load", () => {
-    w.print();
-  });
 }
 
 export function readFileAsDataURL(file: File): Promise<string> {

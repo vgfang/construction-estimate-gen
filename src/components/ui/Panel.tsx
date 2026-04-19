@@ -10,9 +10,9 @@ type Props = {
 export function Panel({ title, action, children, className = "" }: Props) {
   return (
     <section
-      className={`rounded-lg border border-slate-200 bg-white shadow-sm ${className}`}
+      className={`rounded-lg border-2 border-slate-400 bg-white shadow-sm ${className}`}
     >
-      <header className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+      <header className="flex items-center justify-between border-b-2 border-slate-400 px-4 py-3">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-700">
           {title}
         </h2>
